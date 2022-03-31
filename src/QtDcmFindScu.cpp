@@ -200,7 +200,7 @@ bool QtDcmFindScu::doQuery ( const OFList<OFString>& overrideKeys, QtDcmFindCall
                                 QtDcmPreferences::instance()->aetitle().toUtf8().data(),
                                 d->manager->currentPacs().aetitle().toUtf8().data(),
                                 UID_FINDPatientRootQueryRetrieveInformationModel, EXS_Unknown,
-                                DIMSE_BLOCKING, 0, ASC_DEFAULTMAXPDU, false, false, 1, false, -1, &keys, &callback, &fileNameList ).bad() ) {
+                                DIMSE_BLOCKING, 0, ASC_DEFAULTMAXPDU, false, false, 1, DcmFindSCUExtractMode::FEM_none, false, &keys, &callback, &fileNameList ).bad() ) {
         QtDcmManager::instance()->displayErrorMessage ( tr ( "Cannot perform query C-FIND" ) );
     }
 

@@ -8,9 +8,13 @@ endif()
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${${PROJECT_NAME}_SOURCE_DIR}")
 
-find_package( Qt5 REQUIRED COMPONENTS Core Widgets Network )
-get_target_property(QT5_QMAKE_EXECUTABLE Qt5::qmake LOCATION)
-get_filename_component(QT5_BINARY_DIR ${QT5_QMAKE_EXECUTABLE} PATH)
+find_package( QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Network )
+find_package( Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Widgets Network )
+if (QT_VERSION_MAJOR EQUAL 6)
+  find_package( Qt6 REQUIRED COMPONENTS Core5Compat )
+endif()
+get_target_property(QT${QT_VERSION_MAJOR}_QMAKE_EXECUTABLE Qt${QT_VERSION_MAJOR}::qmake LOCATION)
+get_filename_component(QT${QT_VERSION_MAJOR}_BINARY_DIR ${QT${QT_VERSION_MAJOR}_QMAKE_EXECUTABLE} PATH)
 
 find_package( QtDCM REQUIRED )
 find_package( ITK REQUIRED )
@@ -33,17 +37,26 @@ set(${PROJECT_NAME}_UIS
 
 set(${PROJECT_NAME}_MOC_HDRS ${${PROJECT_NAME}_HDRS})
 
+if (QT_VERSION_MAJOR EQUAL 6)
+qt6_wrap_ui( ${PROJECT_NAME}_UI_HDRS ${${PROJECT_NAME}_UIS})
+qt6_wrap_cpp( ${PROJECT_NAME}_MOC_SRCS ${${PROJECT_NAME}_MOC_HDRS})
+else()
 qt5_wrap_ui( ${PROJECT_NAME}_UI_HDRS ${${PROJECT_NAME}_UIS})
 qt5_wrap_cpp( ${PROJECT_NAME}_MOC_SRCS ${${PROJECT_NAME}_MOC_HDRS})
+endif()
 
 set(QT_LIBRARIES
-  Qt5::Core
-  Qt5::Widgets
-  Qt5::Network
+  Qt${QT_VERSION_MAJOR}::Core
+  Qt${QT_VERSION_MAJOR}::Widgets
+  Qt${QT_VERSION_MAJOR}::Network
 )
 
+if (QT_VERSION_MAJOR EQUAL 6)
+  list(APPEND QT_LIBRARIES Qt${QT_VERSION_MAJOR}::Core5Compat)
+endif()
+
 if(WIN32)
-  list(APPEND QT_LIBRARIES Qt5::WinMain)
+  list(APPEND QT_LIBRARIES Qt${QT_VERSION_MAJOR}::WinMain)
 endif()
 
 set(INCLUDE_DIRECTORIES

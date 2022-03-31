@@ -176,8 +176,13 @@ void QtDcmServersDicomSettingsWidget::itemSelected ( QTreeWidgetItem* current, Q
 
 void QtDcmServersDicomSettingsWidget::serverAetitleChanged ( const QString & text )
 {
+    #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    QRegularExpression rexp ( "[A-Z0-9._-]{1,50}" );
+    QValidator * valid = new QRegularExpressionValidator ( rexp, this );
+    #else
     QRegExp rexp ( "[A-Z0-9._-]{1,50}" );
     QRegExpValidator * valid = new QRegExpValidator ( rexp, this );
+    #endif
     serverAetitleEdit->setValidator ( valid );
     treeWidget->currentItem()->setText ( 1, text );
     treeWidget->currentItem()->setData ( 1, 1, QVariant ( text ) );

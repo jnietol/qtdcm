@@ -20,6 +20,7 @@
 #include "QtDcm.h"
 
 #include <QFileDialog>
+#include <QTextCodec>
 
 #include <QtDcmPatient.h>
 #include <QtDcmStudy.h>

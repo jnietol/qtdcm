@@ -370,7 +370,7 @@ void QtDcmMoveScu::addOverrideKey ( const QString & key )
         const DcmDataDictionary& globalDataDict = dcmDataDict.rdlock();
         const DcmDictEntry *dicent = globalDataDict.findEntry ( dicName.c_str() );
 
-        dcmDataDict.unlock();
+        dcmDataDict.rdunlock();
 
         if ( dicent != NULL ) {
             // found dictionary name, copy group and element number
@@ -772,7 +772,7 @@ void QtDcmMoveScu::storeSCPCallback ( void *callbackData, T_DIMSE_StoreProgress 
 
             if ( ( rsp->DimseStatus == STATUS_Success ) && !self->d->ignore ) {
                 /* which SOP class and SOP instance ? */
-                if ( !DU_findSOPClassAndInstanceInDataSet ( *imageDataSet, sopClass, sopInstance, self->d->correctUIDPadding ) ) {
+                if ( !DU_findSOPClassAndInstanceInDataSet ( *imageDataSet, sopClass, sizeof(sopClass), sopInstance, sizeof(sopInstance), self->d->correctUIDPadding ) ) {
                     rsp->DimseStatus = STATUS_STORE_Error_CannotUnderstand;
                 }
                 else if ( strcmp ( sopClass, req->AffectedSOPClassUID ) != 0 ) {
@@ -962,8 +962,8 @@ OFCondition QtDcmMoveScu::moveSCU ( T_ASC_Association * assoc, const char *fname
 
     if ( d->moveDestination == NULL ) {
         /* set the destination to be me */
-        ASC_getAPTitles ( assoc->params, req.MoveDestination,
-                          NULL, NULL );
+        ASC_getAPTitles ( assoc->params, req.MoveDestination, sizeof(req.MoveDestination),
+                          NULL, sizeof(NULL),NULL,sizeof(NULL) );
     }
     else {
         strcpy( req.MoveDestination, d->moveDestination );
